@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,7 @@ public class TestAnalyzer {
     private ExternalSourceResolution externalSourceResolution = ExternalSourceResolution.EMPTY;
     private boolean stripErrorPrefix;
     private Map<String, String> views = new LinkedHashMap<>();
+    private Set<String> referencedFieldNames;
 
     TestAnalyzer() {}
 
@@ -131,6 +133,15 @@ public class TestAnalyzer {
      */
     public TestAnalyzer addIndex(EsIndex index) {
         return addIndex(IndexResolution.valid(index));
+    }
+
+    /**
+     * Restrict {@link Analyzer#mappingAsAttributes} to these field names during analysis (simulates pre-analysis).
+     * {@code null} keeps the full mapping (default).
+     */
+    public TestAnalyzer referencedFieldNames(Set<String> fieldNames) {
+        this.referencedFieldNames = fieldNames;
+        return this;
     }
 
     /**
@@ -810,7 +821,7 @@ public class TestAnalyzer {
             minimumTransportVersion.get(),
             unmappedResolution,
             timestampBounds
-        );
+        ).withReferencedFieldNames(referencedFieldNames);
     }
 
     /**

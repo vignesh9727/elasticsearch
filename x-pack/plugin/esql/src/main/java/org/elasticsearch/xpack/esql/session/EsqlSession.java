@@ -1992,7 +1992,7 @@ public class EsqlSession {
             projectMetadata,
             r,
             timestampBounds
-        );
+        ).withReferencedFieldNames(r.fieldNames());
         Analyzer analyzer = new Analyzer(analyzerContext, verifier);
         LogicalPlan plan = analyzer.analyze(parsed);
         plan.setAnalyzed();
